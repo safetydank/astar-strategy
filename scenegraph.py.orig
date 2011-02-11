@@ -1,0 +1,27 @@
+import ntree
+
+class Scenegraph(object):
+    """A basic 2D scenegraph.  A scenegraph node supports the following interface:
+    
+    predraw()  - push transform(s) onto matrix stack and any other predraw operation
+    draw()     - draw object in local space
+    postdraw() - pop transform(s) from matrix stack
+    
+    """
+
+    def __init__(self):
+        self.tree = ntree.NTree()
+
+    def append(self, data):
+        return self.tree.append(data)
+
+    def new(self):
+        pass
+
+    def draw(self):
+        for node in self.tree.pushpop_iter(pop_cb=lambda n: n.parent.data.postdraw()):
+            node.data.predraw()
+            node.data.draw()
+            if not node.first_child:
+                node.data.postdraw()
+
